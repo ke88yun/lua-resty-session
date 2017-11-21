@@ -316,7 +316,14 @@ function session.open(opts)
                 self.expires = e
                 self.data = type(d) == "table" and d or {}
                 self.present = true
-                return self, true
+                local now = time()
+                if e >= now then
+                    if e - now <= self.cookie.renew then
+                        regenerate(self, false)
+                        save(self)
+                    end
+                	  return self, true
+                end
             end
         end
     end
